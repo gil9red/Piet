@@ -10,8 +10,7 @@ Interpreter language Piet.
 # import argparse
 import os
 import sys
-from PySide import QtGui
-from PySide import QtCore
+from PIL import Image
 
 __author__ = 'ipetrash'
 
@@ -27,37 +26,44 @@ __author__ = 'ipetrash'
 # Цикл оттенков: красный → жёлтый → зелёный → голубой → синий → фиолетовый → красный
 # Цикл яркости: светлый → нормальный → тёмный → светлый
 
-#ffc0c0 light red
-#ffffc0 light yellow
-#c0ffc0 light green
-#c0ffff light cyan
-#c0c0ff light blue
-#ffc0ff light magenta
-light_operand_color = ["#ffc0c0", "#ffffc0", "#c0ffc0", "#c0ffff", "#c0c0ff", "#ffc0ff"]
+light_operand_color = [
+    "#ffc0c0",  # light red
+    "#ffffc0",  # light yellow
+    "#c0ffc0",  # light green
+    "#c0ffff",  # light cyan
+    "#c0c0ff",  # light blue
+    "#ffc0ff",  # light magenta
+]
 
-#ff0000 red
-#ffff00 yellow
-#00ff00 green
-#00ffff cyan
-#0000ff blue
-#ff00ff magenta
-operand_color = ["#ff0000", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"]
+operand_color = [
+    "#ff0000",  # red
+    "#ffff00",  # yellow
+    "#00ff00",  # green
+    "#00ffff",  # cyan
+    "#0000ff",  # blue
+    "#ff00ff",  # magenta
+]
 
-#c00000 dark red
-#c0c000 dark yellow
-#00c000 dark green
-#00c0c0 dark cyan
-#0000c0 dark blue
-#c000c0 dark magenta
-dark_operand_color = ["#c00000", "#c0c000", "#00c000", "#00c0c0", "#0000c0", "#c000c0"]
+dark_operand_color = [
+    "#c00000",  # dark red
+    "#c0c000",  # dark yellow
+    "#00c000",  # dark green
+    "#00c0c0",  # dark cyan
+    "#0000c0",  # dark blue
+    "#c000c0",  # dark magenta
+]
 
-#ffffff white
-#000000 black
+special_operand_color = [
+   "#ffffff",  # white
+   "#000000",  # black
+]
+
+
+def rgb2hex(r, g, b):
+    return '#{:02x}{:02x}{:02x}'.format(r, g, b)
+
 
 def main():
-    # app = QtGui.QApplication(sys.argv)
-    QtGui.QApplication(sys.argv)
-
     file_name = r"D:\My_Projects\Python\Interpreters\Interpreter Piet\examples\hello_world_2_Piet.png"
     if not os.path.exists(file_name):
         print("File %s not exist!" % file_name)
@@ -65,23 +71,21 @@ def main():
 
     # stack = []
 
-    image = QtGui.QImage(file_name)
-    for i in range(image.height()):
-        for j in range(image.width()):
-            color = image.pixel(i, j)
-            name_color = QtGui.QColor(color).name()
-            if name_color in light_operand_color:
-                name_color += "-"
-            elif name_color in operand_color:
-                name_color += "="
-            elif name_color in dark_operand_color:
-                name_color += "+"
-            elif name_color == "#ffffff":
-                name_color += "w"
-            elif name_color == "#000000":
-                name_color += "b"
-            print(name_color, end=' ')
-        print()
+    image = Image.open(file_name, mode="r")  # Open for read
+    image = image.convert("RGB")  # Need rgb-image
+    width, height = image.size
+
+
+    arr = []
+    for i in range(height):
+        arr.append([])
+        for j in range(width):
+            r, g, b = image.getpixel((i, j))
+            rgb = rgb2hex(r, g, b)  # return as hex-string
+            arr[i].append(rgb)
+
+    for row in arr:
+        print(row)
 
     return 0
 
